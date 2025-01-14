@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import ThemeSwitcher from "./components/theme-switcher";
 
 // Schema de validação
 const formSchema = z.object({
@@ -16,7 +17,7 @@ const formSchema = z.object({
   }),
   height: z
     .number({ invalid_type_error: "A altura deve ser um número." })
-    .min(50, "Altura mínima é 50 cm.")
+    .min(50, "Altura mínima é 50 cm. Deve ser escrito em centímetros. Ex: 170")
     .max(250, "Altura máxima é 250 cm."),
   weight: z
     .number({ invalid_type_error: "O peso deve ser um número." })
@@ -41,7 +42,12 @@ export default function Home() {
     resolver: zodResolver(formSchema),
   });
 
-  const calculateTMB = (age: number, sex: "male" | "female", weight: number, height: number) => {
+  const calculateTMB = (
+    age: number,
+    sex: "male" | "female",
+    weight: number,
+    height: number
+  ) => {
     if (sex === "male") {
       return 88.36 + 13.4 * weight + 4.8 * height - 5.7 * age;
     } else {
@@ -54,28 +60,28 @@ export default function Home() {
     goal: "maintain" | "lose" | "gain",
     activity: "sedentary" | "moderate" | "athlete"
   ) => {
-    let activityFactor = 1.2; // Fator para sedentário
+    let activityFactor = 1.2;
     if (activity === "moderate") activityFactor = 1.55;
     if (activity === "athlete") activityFactor = 1.9;
 
     const tmbWithActivity = tmb * activityFactor;
 
     if (goal === "lose") {
-      return tmbWithActivity - 500; // Déficit calórico para perder peso
+      return tmbWithActivity - 500;
     } else if (goal === "gain") {
-      return tmbWithActivity + 500; // Excedente calórico para ganhar peso
+      return tmbWithActivity + 500;
     }
-    return tmbWithActivity; // Manutenção
+    return tmbWithActivity;
   };
 
   const calculateMacros = (calories: number, weight: number) => {
-    const proteinPerKg = 2.0; // Gramas de proteína por kg
-    const fatPercentage = 0.25; // 25% das calorias para gorduras
+    const proteinPerKg = 2.0;
+    const fatPercentage = 0.25;
 
     const proteinGrams = proteinPerKg * weight;
-    const fatGrams = (calories * fatPercentage) / 9; // 1g de gordura = 9 kcal
-    const remainingCalories = calories - (proteinGrams * 4 + fatGrams * 9); // O restante das calorias
-    const carbGrams = remainingCalories / 4; // 1g de carboidrato = 4 kcal
+    const fatGrams = (calories * fatPercentage) / 9;
+    const remainingCalories = calories - (proteinGrams * 4 + fatGrams * 9);
+    const carbGrams = remainingCalories / 4;
 
     return {
       protein: Math.round(proteinGrams),
@@ -111,14 +117,31 @@ export default function Home() {
   } | null>(null);
 
   return (
-    <div className="font-sans min-h-screen bg-gray-300">
-      {/* Navbar */}
-      <nav className="w-full bg-green-800 shadow-md">
+    <div className="font-sans min-h-screen transition-colors bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
+      <nav className="w-full bg-green-800 dark:bg-green-950 shadow-md">
         <div className="container mx-auto flex justify-between items-center px-6 py-4">
-          <a href="#" className="text-gray-300 text-2xl font-medium transition-all duration-300 hover:text-gray-400 hover:no-underline">Nutrition.ai 🍎</a>
-          <div className="space-x-9">
-            <a href="#" className="text-gray-300 text-lg font-medium transition-all duration-300 hover:text-gray-400 hover:no-underline">Menu</a>
-            <a href="#" className="text-gray-300 text-lg font-medium transition-all duration-300 hover:text-gray-400 hover:no-underline">Login</a>
+          <a
+            href="#"
+            className="text-gray-300 text-2xl font-medium hover:text-gray-400"
+          >
+            Nutrition.ai 🍎
+          </a>
+          <div className="space-x-4 flex items-center">
+            {/* <a
+              href="#"
+              className="text-gray-300 text-lg font-medium hover:text-gray-400"
+            >
+              Menu
+            </a> */}
+            <a
+              href="#"
+              className="text-gray-300 text-lg font-medium hover:text-gray-400"
+            >
+              Login
+            </a>
+            <div className="pl-3">
+            <ThemeSwitcher />
+            </div>
           </div>
         </div>
       </nav>
@@ -128,108 +151,146 @@ export default function Home() {
         {/* Formulário */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white p-8 shadow-md rounded-lg w-full max-w-md"
+          className="bg-white dark:bg-gray-800 dark:text-gray-200 p-8 shadow-md rounded-lg w-full max-w-md"
         >
-          <h2 className="text-4xl font-bold mb-6 text-center">Calculadora de gasto calórico 🔥</h2>
+          <h2 className="text-4xl font-bold mb-6 text-center">
+            Calculadora de gasto calórico 🔥
+          </h2>
 
           {/* Campo: Idade */}
           <div className="mb-4">
-            <label htmlFor="age" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="age"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Idade (anos)
             </label>
             <input
               id="age"
               type="number"
               {...register("age", { valueAsNumber: true })}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
-            {errors.age && <p className="text-sm text-red-500 mt-1">{errors.age.message}</p>}
+            {errors.age && (
+              <p className="text-sm text-red-500 mt-1">{errors.age.message}</p>
+            )}
           </div>
 
           {/* Campo: Sexo */}
           <div className="mb-4">
-            <label htmlFor="sex" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="sex"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Sexo
             </label>
             <select
               id="sex"
               {...register("sex")}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             >
               <option value="">Selecione</option>
               <option value="male">Masculino</option>
               <option value="female">Feminino</option>
             </select>
-            {errors.sex && <p className="text-sm text-red-500 mt-1">{errors.sex.message}</p>}
+            {errors.sex && (
+              <p className="text-sm text-red-500 mt-1">{errors.sex.message}</p>
+            )}
           </div>
 
           {/* Campo: Altura */}
           <div className="mb-4">
-            <label htmlFor="height" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="height"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Altura (cm)
             </label>
             <input
               id="height"
               type="number"
               {...register("height", { valueAsNumber: true })}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
-            {errors.height && <p className="text-sm text-red-500 mt-1">{errors.height.message}</p>}
+            {errors.height && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.height.message}
+              </p>
+            )}
           </div>
 
           {/* Campo: Peso */}
           <div className="mb-4">
-            <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="weight"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Peso (kg)
             </label>
             <input
               id="weight"
               type="number"
               {...register("weight", { valueAsNumber: true })}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
-            {errors.weight && <p className="text-sm text-red-500 mt-1">{errors.weight.message}</p>}
+            {errors.weight && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.weight.message}
+              </p>
+            )}
           </div>
 
           {/* Campo: Objetivo */}
           <div className="mb-4">
-            <label htmlFor="goal" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="goal"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Objetivo
             </label>
             <select
               id="goal"
               {...register("goal")}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             >
               <option value="">Selecione</option>
               <option value="maintain">Manter peso</option>
               <option value="lose">Perder peso</option>
               <option value="gain">Ganhar peso</option>
             </select>
-            {errors.goal && <p className="text-sm text-red-500 mt-1">{errors.goal.message}</p>}
+            {errors.goal && (
+              <p className="text-sm text-red-500 mt-1">{errors.goal.message}</p>
+            )}
           </div>
 
           {/* Campo: Atividade */}
           <div className="mb-4">
-            <label htmlFor="activity" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="activity"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Nível de Atividade
             </label>
             <select
               id="activity"
               {...register("activity")}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             >
               <option value="">Selecione</option>
               <option value="sedentary">Sedentário</option>
               <option value="moderate">Moderado</option>
               <option value="athlete">Atleta</option>
             </select>
-            {errors.activity && <p className="text-sm text-red-500 mt-1">{errors.activity.message}</p>}
+            {errors.activity && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.activity.message}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-green-800 text-white font-medium rounded-md transition-all duration-300 hover:bg-green-950"
+            className="w-full py-2 px-4 bg-green-800 dark:bg-green-700 text-white font-medium rounded-md transition-all duration-300 hover:bg-green-950 dark:hover:bg-green-900"
           >
             Calcular
           </button>
@@ -237,11 +298,13 @@ export default function Home() {
 
         {/* Resultado */}
         {result && (
-          <div className="mt-8 bg-white p-6 shadow-md rounded-lg text-center w-full sm:w-96">
+          <div className="mt-8 bg-white dark:bg-gray-800 dark:text-gray-200 p-6 shadow-md rounded-lg text-center w-full sm:w-96">
             <h3 className="text-lg font-bold">
               Para {result.goalText}, você deve consumir aproximadamente:
             </h3>
-            <p className="text-2xl font-bold text-green-800">{result.adjustedCalories} kcal</p>
+            <p className="text-2xl font-bold text-green-800 dark:text-green-400">
+              {result.adjustedCalories} kcal
+            </p>
             <div className="mt-4">
               <p>
                 <strong>Proteínas:</strong> {result.macros.protein}g
@@ -252,13 +315,9 @@ export default function Home() {
               <p>
                 <strong>Carboidratos:</strong> {result.macros.carbs}g
               </p>
-
-              <button
-            type="submit"
-            className="w-full mt-8 py-2 px-4 bg-green-800 text-white font-medium rounded-md transition-all duration-300 hover:bg-green-950"
-          >
-            Gerar sugestão de cardápio
-          </button>
+              <button className="w-full mt-8 py-2 px-4 bg-green-800 dark:bg-green-700 text-white font-medium rounded-md transition-all duration-300 hover:bg-green-950 dark:hover:bg-green-900">
+                Gerar sugestão de cardápio
+              </button>
             </div>
           </div>
         )}
