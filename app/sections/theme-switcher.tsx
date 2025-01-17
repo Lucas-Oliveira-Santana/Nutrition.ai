@@ -21,9 +21,9 @@ export default function ThemeSwitcher() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200"
+      className=" rounded-md dark:bg-gray-700 dark:text-gray-200"
     >
-      {theme === "light" ? "🌙" : "☀️"}
+      {theme === "light" ? "🌙" : "🌞"}
     </button>
   );
 }
