@@ -8,7 +8,7 @@ export function CallToAction() {
   };
 
   return (
-    <section className="space-x-9 space-y-9 relative flex flex-col-reverse md:flex-row items-center dark:bg-gray-900 bg-gray-100 text-muted-foreground py-10 px-6 md:px-16 lg:px-32 rounded-lg shadow-lg">
+    <section className="lg:space-x-9 space-y-9 relative flex flex-col-reverse md:flex-row items-center dark:bg-gray-900 bg-gray-100 text-muted-foreground py-10 px-6 md:px-16 lg:px-32 rounded-lg shadow-lg">
       {/* Coluna da Imagem */}
       <div className="w-full md:w-1/2 h-64 md:h-auto overflow-hidden">
         <Image
